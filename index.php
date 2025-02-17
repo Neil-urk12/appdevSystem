@@ -146,7 +146,7 @@ try {
 
         <form id="searchForm" method="GET">
             <input type="text" name="search" placeholder="Search employees..." value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
-            <button type="submit" class="btn" style="background-color: #007bff; color: #fff;">Search</button>
+            <button type="submit" class="btn">Search</button>
             <?php if(isset($_GET['search']) && $_GET['search'] != ''): ?>
               <a href="index.php"><button type="button" class="reset-btn" style="background-color: #dc3545; color: #fff; opacity: 0.9;">Reset</button></a>
             <?php endif; ?>

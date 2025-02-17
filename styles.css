@@ -199,7 +199,12 @@ td:nth-child(5) {
 
 th:nth-child(6),
 td:nth-child(6) {
-    width: 25%;
+    width: 15%;
+}
+
+th:nth-child(7),
+td:nth-child(7) {
+    width: 20%;
     text-align: center;
 }
 
@@ -253,10 +258,9 @@ tbody tr:nth-child(even) {
 
 #searchForm button, .reset-btn {
     padding: 12px 24px;
-    background: #3b4d7a;
     color: #fff;
     border-radius: 4px;
-    font-weight: 500;
+    font-weight: 600;
     border: none;
 }
 
