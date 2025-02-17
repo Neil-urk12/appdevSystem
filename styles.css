@@ -1,0 +1,330 @@
+/* Custom CSS for Employee Management System */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #1e2a4a 0%, #293462 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+.navbar {
+    background-color: #343a40;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.navbar .navbar-brand {
+    font-size: 1.5em;
+    text-decoration: none;
+    color: #fff;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.table-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px 25px;
+}
+
+.table-heading h2 {
+    color: #fff;
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: 500;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    overflow: hidden;
+}
+
+.card-header {
+    background: #2c3e50;
+    padding: 15px 20px;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.1em;
+    border: none;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"] {
+    display: block;
+    margin: 0 auto;
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #007bff;
+    color: #fff;
+}
+
+.btn-warning {
+    background: #3b4d7a;
+    color: #fff;
+}
+
+.btn-warning:hover {
+    background: #4a5f8f;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: #fff;
+    opacity: 0.9;
+}
+
+.btn-danger:hover {
+    opacity: 1;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 0.875em;
+    border-radius: 4px;
+    margin: 0 2px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    table-layout: fixed;
+}
+
+th, td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #e9ecef;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+th:nth-child(1),
+td:nth-child(1) {
+    width: 60px;
+    text-align: center;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+    width: 15%;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+    width: 15%;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+    width: 25%;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+    width: 20%;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+    width: 25%;
+    text-align: center;
+}
+
+th {
+    background: #f8f9fa;
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    padding: 15px 20px;
+}
+
+td {
+    color: #444;
+    font-size: 0.95em;
+    text-align: center;
+}
+
+tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+tbody tr:nth-child(even) {
+    background: transparent;
+}
+
+#searchForm {
+    margin-bottom: 25px;
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+#searchForm input[type="text"] {
+    flex: 1;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95em;
+}
+
+#searchForm input[type="text"]:focus {
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+    outline: none;
+}
+
+#searchForm button, .reset-btn {
+    padding: 12px 24px;
+    background: #3b4d7a;
+    color: #fff;
+    border-radius: 4px;
+    font-weight: 500;
+    border: none;
+}
+
+#searchForm button:hover {
+    background: #4a5f8f;
+}
+
+.reset-btn {
+    background: #dc3545;
+    color: #fff;
+    opacity: 0.9;
+}
+
+#editModal, #createModal, .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    z-index: 2001;
+}
+
+.modal-content h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.modal-content .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.add-employee-heading {
+    display: inline-block;
+    border-bottom: 4px solid blue;
+    padding-bottom: 5px;
+}
+/* Add responsive table wrapper */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 15px;
+    }
+    
+    .table-heading {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .table-responsive {
+        margin: 0 -15px;
+    }
+} 
