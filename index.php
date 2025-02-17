@@ -19,7 +19,7 @@ if (isset($_POST['create'])) {
         $email = $conn->real_escape_string($_POST['email']);
         $position = $conn->real_escape_string($_POST['position']);
         
-        $sql = "INSERT INTO employees (firstname, lastname, email, position) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO employees (firstname, lastname, email, position, updated_at) VALUES (?, ?, ?, ?, NOW())";
         $stmt = $conn->prepare($sql);
         
         if (!$stmt) {
@@ -72,7 +72,7 @@ if (isset($_POST['update'])) {
         $email = $conn->real_escape_string($_POST['email']);
         $position = $conn->real_escape_string($_POST['position']);
         
-        $sql = "UPDATE employees SET firstname=?, lastname=?, email=?, position=? WHERE id=?";
+        $sql = "UPDATE employees SET firstname=?, lastname=?, email=?, position=?, updated_at=NOW() WHERE id=?";
         $stmt = $conn->prepare($sql);
         
         if (!$stmt) {
