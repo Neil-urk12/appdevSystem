@@ -121,6 +121,11 @@ a {
     transition: all 0.3s ease;
     background-color: #007bff;
     color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    min-width: 80px;
 }
 
 .btn-warning {
@@ -136,6 +141,7 @@ a {
     background: #dc3545;
     color: #fff;
     opacity: 0.9;
+    padding: 8px 18px;
 }
 
 .btn-danger:hover {

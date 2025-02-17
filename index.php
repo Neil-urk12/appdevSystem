@@ -184,8 +184,10 @@ try {
                                         '<?php echo addslashes($row['lastname']); ?>', 
                                         '<?php echo addslashes($row['email']); ?>', 
                                         '<?php echo addslashes($row['position']); ?>'
-                                    )" class="btn btn-warning" style="background-color: #007bff; color: #fff;">Edit</button>
-                                    <a href="?delete=<?php echo $row['id']; ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>
+                                    )" class="btn btn-warning">Edit</button>
+                                    <a href="?delete=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this employee?')">
+                                        <button type="button" class="btn btn-danger">Delete</button>
+                                    </a>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
