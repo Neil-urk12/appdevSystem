@@ -2,6 +2,11 @@
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+if(isset($_POST['logout'])){
+    session_destroy();
+    header("Location: authpage.php");
+    exit();
+}
 
 // Check if user is not logged in
 if (!isset($_SESSION['user_id'])) {
@@ -144,6 +149,11 @@ try {
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div style="position: absolute; bottom: 10px; left: 10px;">
+        <form method="post">
+            <button type="submit" name="logout" class="btn">Logout</button>
+        </form>
+    </div>
     <div class="container">
         
         <div class="table-heading">
