@@ -19,13 +19,64 @@ try {
     die("Database connection error: " . $e->getMessage());
 }
 
+// Handle registration form submission
+if (isset($_POST['register'])) {
+    try {
+        $username = $conn->real_escape_string($_POST['username']);
+        $password = $_POST['password'];
+        $confirm_password = $_POST['confirm_password'];
+        
+        // Validate password match
+        if ($password !== $confirm_password) {
+            $error_message = "Passwords do not match";
+        } else {
+            // Check if username already exists
+            $check_sql = "SELECT id FROM users WHERE username = ?";
+            $check_stmt = $conn->prepare($check_sql);
+            
+            if (!$check_stmt) {
+                throw new Exception("Prepare failed: " . $conn->error);
+            }
+            
+            $check_stmt->bind_param("s", $username);
+            $check_stmt->execute();
+            $result = $check_stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                $error_message = "Username already exists";
+            } else {
+                // Insert new user with default 'user' role
+                $insert_sql = "INSERT INTO users (username, password, role) VALUES (?, ?, 'user')";
+                $insert_stmt = $conn->prepare($insert_sql);
+                
+                if (!$insert_stmt) {
+                    throw new Exception("Prepare failed: " . $conn->error);
+                }
+                
+                $insert_stmt->bind_param("ss", $username, $password);
+                
+                if ($insert_stmt->execute()) {
+                    $success_message = "Registration successful! Please login.";
+                } else {
+                    throw new Exception("Registration failed: " . $insert_stmt->error);
+                }
+                
+                $insert_stmt->close();
+            }
+            $check_stmt->close();
+        }
+    } catch (Exception $e) {
+        $error_message = "Registration error: " . $e->getMessage();
+    }
+}
+
 // Handle login form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if (isset($_POST['login'])) {
     try {
         $username = $conn->real_escape_string($_POST['username']);
         $password = $_POST['password'];
         
-        $sql = "SELECT id, username, password FROM users WHERE username = ?";
+        $sql = "SELECT id, username, password, role FROM users WHERE username = ?";
         $stmt = $conn->prepare($sql);
         
         if (!$stmt) {
@@ -43,10 +94,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             // For now, using direct comparison - you should implement password_hash() for new users
-            if ($password === $user['password']) { // In production, use: password_verify($password, $user['password'])
+            if ($password === $user['password']) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                header("Location: index.php");
+                $_SESSION['role'] = $user['role'];
+                
+                // Redirect based on role
+                if ($user['role'] === 'admin') {
+                    header("Location: index.php");
+                } else {
+                    header("Location: authpage."); // Create this page for regular users
+                }
                 exit();
             }
         }
@@ -116,28 +174,111 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             color: red;
             margin-bottom: 15px;
         }
+        .auth-toggle {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .auth-toggle a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        
+        .auth-toggle a:hover {
+            text-decoration: underline;
+        }
+        
+        .success {
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        
+        #loginForm, #registerForm {
+            display: none;
+        }
+        
+        .active {
+            display: block !important;
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h2>Login</h2>
+        <h2 id="formTitle">Login</h2>
+        
         <?php if (isset($error_message)): ?>
             <div class="error"><?php echo htmlspecialchars($error_message); ?></div>
         <?php endif; ?>
         
-        <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+        <?php if (isset($success_message)): ?>
+            <div class="success"><?php echo htmlspecialchars($success_message); ?></div>
+        <?php endif; ?>
+        
+        <!-- Login Form -->
+        <form id="loginForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="active">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+                <label for="login_username">Username:</label>
+                <input type="text" id="login_username" name="username" required>
             </div>
             
             <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <label for="login_password">Password:</label>
+                <input type="password" id="login_password" name="password" required>
             </div>
             
-            <button type="submit">Login</button>
+            <button type="submit" name="login">Login</button>
+            
+            <div class="auth-toggle">
+                Don't have an account? <a href="#" onclick="toggleForms('register'); return false;">Register</a>
+            </div>
+        </form>
+        
+        <!-- Registration Form -->
+        <form id="registerForm" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+            <div class="form-group">
+                <label for="reg_username">Username:</label>
+                <input type="text" id="reg_username" name="username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="reg_password">Password:</label>
+                <input type="password" id="reg_password" name="password" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password:</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            
+            <button type="submit" name="register">Register</button>
+            
+            <div class="auth-toggle">
+                Already have an account? <a href="#" onclick="toggleForms('login'); return false;">Login</a>
+            </div>
         </form>
     </div>
+
+    <script>
+        function toggleForms(form) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const formTitle = document.getElementById('formTitle');
+            
+            if (form === 'register') {
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                formTitle.textContent = 'Register';
+            } else {
+                registerForm.classList.remove('active');
+                loginForm.classList.add('active');
+                formTitle.textContent = 'Login';
+            }
+        }
+        
+        // Show the appropriate form based on the action
+        <?php if (isset($_POST['register'])): ?>
+            toggleForms('register');
+        <?php endif; ?>
+    </script>
 </body>
 </html>

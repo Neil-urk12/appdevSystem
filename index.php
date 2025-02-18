@@ -1,6 +1,13 @@
 <?php
+session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+// Check if user is not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: authpage.php");
+    exit();
+}
 
 try {
     $conn = new mysqli('localhost', 'root', '@Mirkingwapa1112', 'employee_db');
