@@ -159,7 +159,7 @@ if (isset($_POST['login'])) {
             box-sizing: border-box;
         }
         button {
-            background-color: #4CAF50;
+            background-color: blue;
             color: white;
             padding: 10px 15px;
             border: none;
@@ -168,7 +168,9 @@ if (isset($_POST['login'])) {
             width: 100%;
         }
         button:hover {
-            background-color: #45a049;
+           color: blue;
+            border: 2px solid blue; 
+            background-color: rgb(255, 255, 255);
         }
         .error {
             color: red;
@@ -180,7 +182,7 @@ if (isset($_POST['login'])) {
         }
         
         .auth-toggle a {
-            color: #4CAF50;
+            color: blue;
             text-decoration: none;
         }
         
