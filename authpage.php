@@ -101,9 +101,9 @@ if (isset($_POST['login'])) {
                 
                 // Redirect based on role
                 if ($user['role'] === 'admin') {
-                    header("Location: index.php");
+                    header("Location: user_management.php");
                 } else {
-                    header("Location: authpage."); // Create this page for regular users
+                    header("Location: index.php"); // Create this page for regular users
                 }
                 exit();
             }
