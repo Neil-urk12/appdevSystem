@@ -269,10 +269,23 @@ tbody tr:nth-child(even) {
     opacity: 0.9;
 }
 
-#editModal, #createModal, .modal {
+.modal {
     display: none;
     position: fixed;
     inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+#editModal {
+    display: none;
+    position: fixed;
+    left: -50px;
+    top: -40px;
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
