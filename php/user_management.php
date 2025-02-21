@@ -132,7 +132,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
     <style>
         .role-admin { color: #dc3545; font-weight: bold; }
         .role-user { color: #28a745; }
@@ -141,19 +141,26 @@ try {
         }
         .nav-links a {
             margin-right: 15px;
-            color: #4CAF50;
             text-decoration: none;
+        }
+        .back-btn {
+            color: #4CAF50;
+            padding: 8px 16px;
         }
         .nav-links a:hover {
             text-decoration: underline;
+        }
+        .logout-btn {
+            color: #dc3545;
+            padding: 8px 16px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="nav-links">
-            <a href="index.php">← Back to Employee Management</a>
-            <a href="authpage.php?logout=1">Logout</a>
+            <a href="index.php" class="back-btn">← Back to Employee Management</a>
+            <a href="authpage.php?logout=1" class="logout-btn">Logout</a>
         </div>
         
         <div class="table-heading">
