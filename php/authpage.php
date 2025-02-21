@@ -26,8 +26,12 @@ if (isset($_POST['register'])) {
         $password = $_POST['password'];
         $confirm_password = $_POST['confirm_password'];
         
+        // Validate password length
+        if (strlen($password) < 8) {
+            $error_message = "Password must be at least 8 characters long";
+        }
         // Validate password match
-        if ($password !== $confirm_password) {
+        else if ($password !== $confirm_password) {
             $error_message = "Passwords do not match";
         } else {
             // Check if username already exists
