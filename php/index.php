@@ -3,18 +3,20 @@ session_start();
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
-require_once __DIR__ . '/actions/logout.php';
-
 // Check if user is not logged in
 if (!isset($_SESSION["user_id"])) {
     header("Location: authpage.php");
     exit();
 }
 
+// Handle logout
+if (isset($_POST["logout"])) {
+    session_destroy();
+    header("Location: authpage.php");
+    exit();
+}
+
 require_once 'db_connect.php';
-
-
-
 require_once __DIR__ . '/actions/list.php';
 ?>
 <?php
@@ -49,7 +51,6 @@ require_once __DIR__ . '/actions/update.php';
 require_once __DIR__ . '/actions/delete.php';
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,12 +58,12 @@ require_once __DIR__ . '/actions/delete.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Management</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 
 <body>
     <div style="position: absolute; bottom: 10px; left: 10px;">
-        <form method="post" action="actions/logout.php">
+        <form method="post">
             <button type="submit" name="logout" class="btn">Logout</button>
         </form>
     </div>
