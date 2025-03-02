@@ -9,15 +9,8 @@ if (isset($_SESSION['user_id'])) {
     exit();
 }
 
-try {
-    $conn = new mysqli('localhost', 'root', '@Mirkingwapa1112', 'employee_db');
-    
-    if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error);
-    }
-} catch (Exception $e) {
-    die("Database connection error: " . $e->getMessage());
-}
+require_once 'db_connect.php';
+// Remove the redundant connection code
 
 // Handle registration form submission
 if (isset($_POST['register'])) {
@@ -142,7 +135,7 @@ if (isset($_POST['login'])) {
         .login-container {
             background-color: white;
             padding: 20px;
-            border-radius: 5px;
+            border-radius: 24px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 400px;
@@ -170,10 +163,11 @@ if (isset($_POST['login'])) {
             border-radius: 4px;
             cursor: pointer;
             width: 100%;
+            transition: all 0.3s ease;
         }
         button:hover {
-           color: blue;
-            border: 2px solid blue; 
+            color: blue;
+            border: 1px solid blue; 
             background-color: rgb(255, 255, 255);
         }
         .error {
@@ -235,7 +229,7 @@ if (isset($_POST['login'])) {
             <button type="submit" name="login">Login</button>
             
             <div class="auth-toggle">
-                Don't have an account? <a href="#" onclick="toggleForms('register'); return false;">Register</a>
+                Don't have an account? <a href="#" onclick="toggleForms('register'); return false;">Register</a> | <a href="forgot_password.php">Forgot Password</a>
             </div>
         </form>
         

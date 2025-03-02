@@ -9,15 +9,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
-try {
-    $conn = new mysqli('localhost', 'root', '@Mirkingwapa1112', 'employee_db');
-    
-    if ($conn->connect_error) {
-        throw new Exception("Connection failed: " . $conn->connect_error);
-    }
-} catch (Exception $e) {
-    die("Database connection error: " . $e->getMessage());
-}
+require_once 'db_connect.php';
 
 // Handle Create User
 if (isset($_POST['create'])) {
