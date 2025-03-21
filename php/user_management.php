@@ -296,11 +296,6 @@ try {
 </head>
 <body>
     <div class="container">
-        <div class="nav-links">
-            <a href="index.php" class="back-btn">← Back to Employee Management</a>
-            <a href="authpage.php?logout=1" class="logout-btn">Logout</a>
-        </div>
-        
         <div class="table-heading">
             <h2>User Management</h2>
             <button type="button" class="btn" onclick="openModal()">Add User</button>

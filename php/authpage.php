@@ -335,8 +335,8 @@ if (isset($_POST['login'])) {
                 error_log("Role comparison: '" . $user['roles'] . "' === 'admin' is: " . ($user['roles'] === 'admin' ? 'true' : 'false'));
                 
                 if ($user['roles'] === 'admin') {
-                    error_log("Redirecting admin to user_management.php");
-                    header("Location: user_management.php");
+                    error_log("Redirecting admin to admin.php");
+                    header("Location: admin.php");
                 } else {
                     error_log("Redirecting user to index.php");
                     header("Location: index.php");
