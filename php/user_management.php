@@ -9,6 +9,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+// Handle logout
+if (isset($_POST['logout'])) {
+    session_destroy();
+    header("Location: authpage.php");
+    exit();
+}
+
 require_once 'db_connect.php';
 
 // Handle Create User
@@ -197,10 +204,15 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+    <!-- Custom CSS -->
+    <!-- <link rel="stylesheet" href="/css/styles.css"> -->
     <style>
-        .role-admin { color: #dc3545; font-weight: bold; }
-        .role-user { color: #28a745; }
         .nav-links {
             margin-bottom: 20px;
             display: flex;
@@ -295,43 +307,73 @@ try {
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="table-heading">
-            <h2>User Management</h2>
-            <button type="button" class="btn" onclick="openModal()">Add User</button>
-        </div>
-
-        <?php if (isset($success_message)): ?>
-            <div class="success-message"><?php echo htmlspecialchars($success_message); ?></div>
-        <?php endif; ?>
-
-        <?php if (isset($error_message)): ?>
-            <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
-        <?php endif; ?>
-
-        <form class="search-form" method="GET">
-            <input type="text" name="search" placeholder="Search users..." value="<?php echo htmlspecialchars($search); ?>">
-            <button type="submit" class="btn">Search</button>
-            <?php if ($search): ?>
-                <a href="?" class="btn btn-danger">Clear</a>
-            <?php endif; ?>
-        </form>
-
-        <div class="card">
-            <div class="card-header">
-                User List
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <span class="navbar-brand">User Management System</span>
+            <div class="ml-auto">
+                <a href="index.php" class="btn btn-info mr-2">
+                    <i class="fas fa-arrow-left"></i> Back to Employees
+                </a>
+                <form method="post" class="d-inline">
+                    <button type="submit" name="logout" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
             </div>
-            <div class="table-responsive">
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="card-title mb-0">User Management</h2>
+                    <button type="button" class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i> Add User
+                    </button>
+                </div>
+
+                <?php if (isset($success_message)): ?>
+                    <div class="alert alert-success" role="alert">
+                        <?php echo htmlspecialchars($success_message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($error_message)): ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php echo htmlspecialchars($error_message); ?>
+                    </div>
+                <?php endif; ?>
+
+                <form id="searchForm" method="GET" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control"
+                               placeholder="Search users by username, email or role..."
+                               value="<?php echo htmlspecialchars($search); ?>">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <?php if ($search): ?>
+                                <a href="?" class="btn btn-danger">
+                                    <i class="fas fa-times"></i> Reset
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="table-responsive">
                 <?php if($result->num_rows > 0): ?>
-                    <table>
+                    <table id="userTable" class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Username</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
+                                <th style="width: 5%">ID</th>
+                                <th style="width: 20%">Username</th>
+                                <th style="width: 25%">Email</th>
+                                <th style="width: 15%">Role</th>
+                                <th style="width: 20%">Created At</th>
+                                <th style="width: 15%">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -345,19 +387,24 @@ try {
                                 </td>
                                 <td><?php echo htmlspecialchars($row['created_at']); ?></td>
                                 <td>
-                                    <button type="button" onclick="editUser(
-                                        <?php echo $row['id']; ?>, 
-                                        '<?php echo addslashes($row['username']); ?>',
-                                        '<?php echo addslashes($row['email']); ?>',
-                                        '<?php echo addslashes($row['roles']); ?>'
-                                    )" class="btn btn-warning btn-sm">Edit</button>
-                                    
-                                    <?php if ($row['id'] !== $_SESSION['user_id']): ?>
-                                        <a href="?delete=<?php echo $row['id']; ?>" 
-                                           onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')">
-                                            <button type="button" class="btn btn-danger btn-sm">Delete</button>
-                                        </a>
-                                    <?php endif; ?>
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button type="button" onclick="editUser(
+                                            <?php echo $row['id']; ?>,
+                                            '<?php echo addslashes($row['username']); ?>',
+                                            '<?php echo addslashes($row['email']); ?>',
+                                            '<?php echo addslashes($row['roles']); ?>'
+                                        )" class="btn btn-info btn-sm" style="width: 20px;" title="Edit User">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        <?php if ($row['id'] !== $_SESSION['user_id']) { ?>
+                                            <a href="?delete=<?php echo $row['id']; ?>"
+                                               onclick="return confirm('Are you sure you want to delete this user? This action cannot be undone.')"
+                                               class="btn btn-danger btn-sm" style="width: 20px;" title="Delete User">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        <?php } ?>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endwhile; ?>
@@ -370,73 +417,99 @@ try {
         </div>
 
         <!-- Create User Modal -->
-        <div id="createModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
-                <h3>Add New User</h3>
-                <form method="POST" onsubmit="return validateForm(this)">
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" required>
+        <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createModalLabel">Add New User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-                        <div class="password-requirements">
-                            Password must be at least 8 characters long
+                    <form method="POST" onsubmit="return validateForm(this)">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                                <small class="form-text text-muted">
+                                    Password must be at least 8 characters long
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Role</label>
+                                <select class="form-control" id="role" name="role" required>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="role">Role</label>
-                        <select id="role" name="role" required>
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
-                    <button type="submit" name="create" class="btn">Add User</button>
-                </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" name="create" class="btn btn-primary">Add User</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
         <!-- Edit User Modal -->
-        <div id="editModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeEditModal()">&times;</span>
-                <h3>Edit User</h3>
-                <form method="POST" onsubmit="return validateForm(this)">
-                    <input type="hidden" id="edit_id" name="id">
-                    <div class="form-group">
-                        <label for="edit_username">Username</label>
-                        <input type="text" id="edit_username" name="username" required>
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_email">Email</label>
-                        <input type="email" id="edit_email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_password">New Password (leave blank to keep current)</label>
-                        <input type="password" id="edit_password" name="password">
-                        <div class="password-requirements">
-                            Password must be at least 8 characters long
+                    <form method="POST" onsubmit="return validateForm(this)">
+                        <div class="modal-body">
+                            <input type="hidden" id="edit_id" name="id">
+                            <div class="form-group">
+                                <label for="edit_username">Username</label>
+                                <input type="text" class="form-control" id="edit_username" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_email">Email</label>
+                                <input type="email" class="form-control" id="edit_email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_password">New Password (leave blank to keep current)</label>
+                                <input type="password" class="form-control" id="edit_password" name="password">
+                                <small class="form-text text-muted">
+                                    Password must be at least 8 characters long
+                                </small>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_role">Role</label>
+                                <select class="form-control" id="edit_role" name="role" required>
+                                    <option value="user">User</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_role">Role</label>
-                        <select id="edit_role" name="role" required>
-                            <option value="user">User</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
-                    <button type="submit" name="update" class="btn">Update User</button>
-                </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" name="update" class="btn btn-primary">Update User</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         function validateForm(form) {
             const password = form.password.value;
@@ -448,31 +521,39 @@ try {
         }
 
         function editUser(id, username, email, role) {
-            document.getElementById('editModal').style.display = 'flex';
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_username').value = username;
             document.getElementById('edit_email').value = email;
             document.getElementById('edit_role').value = role;
             document.getElementById('edit_password').value = '';
+            $('#editModal').modal('show');
         }
 
         function openModal() {
-            document.getElementById('createModal').style.display = 'flex';
+            $('#createModal').modal('show');
         }
 
-        function closeModal() {
-            document.getElementById('createModal').style.display = 'none';
-        }
+        // Initialize Bootstrap tooltips
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
 
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('#userTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false, // Using custom search
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 10
+            });
+        });
     </script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
 </body>
 </html>

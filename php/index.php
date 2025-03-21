@@ -58,32 +58,55 @@ require_once __DIR__ . '/actions/delete.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Management</title>
-    <link rel="stylesheet" href="/css/styles.css">
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom CSS -->
+    <!-- <link rel="stylesheet" href="/css/styles.css"> -->
 </head>
 
 <body>
-    <div style="position: absolute; bottom: 10px; left: 10px; display: flex; gap: 10px;">
-        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
-            <a href="user_management.php" class="btn" style="background-color: #3b4d7a;">Manage Users</a>
-        <?php endif; ?>
-        <form method="post">
-            <button type="submit" name="logout" class="btn">Logout</button>
-        </form>
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <span class="navbar-brand">Employee Management System</span>
+            <div class="ml-auto">
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                    <a href="user_management.php" class="btn btn-info mr-2">Manage Users</a>
+                <?php endif; ?>
+                <form method="post" class="d-inline">
+                    <button type="submit" name="logout" class="btn btn-danger">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
     <div class="container">
 
-        <div class="table-heading">
-            <h2>Employee Management</h2>
-            <button type="button" class="btn" onclick="openModal()">Add Employee</button>
-        </div>
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="card-title mb-0">Employee List</h2>
+                    <button type="button" class="btn btn-primary" onclick="openModal()">
+                        <i class="fas fa-plus"></i> Add Employee
+                    </button>
+                </div>
 
-        <form id="searchForm" method="GET">
-            <input type="text" name="search" placeholder="Search employees..." value="<?php echo isset($_GET["search"]) ? htmlspecialchars($_GET["search"]) : ""; ?>">
-            <button type="submit" class="btn">Search</button>
-            <?php if (isset($_GET["search"]) && $_GET["search"] != "") : ?>
-                <a href="index.php"><button type="button" class="reset-btn" style="background-color: #dc3545; color: #fff; opacity: 0.9;">Reset</button></a>
-            <?php endif; ?>
-        </form>
+                <form id="searchForm" method="GET" class="mb-4">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" placeholder="Search employees..."
+                            value="<?php echo isset($_GET["search"]) ? htmlspecialchars($_GET["search"]) : ""; ?>">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                            <?php if (isset($_GET["search"]) && $_GET["search"] != "") : ?>
+                                <a href="index.php" class="btn btn-danger">Reset</a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </form>
 
         <div class="card">
             <div class="card-header">
@@ -91,15 +114,15 @@ require_once __DIR__ . '/actions/delete.php';
             </div>
             <div class="table-responsive">
                 <?php if ($result->num_rows > 0) : ?>
-                    <table>
+                    <table id="employeeTable" class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Position</th>
-                                <th style="text-align: center;">Actions</th>
+                                <th width="5%">ID</th>
+                                <th width="20%">First Name</th>
+                                <th width="20%">Last Name</th>
+                                <th width="25%">Email</th>
+                                <th width="15%">Position</th>
+                                <th width="15%" style="text-align: center;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -111,16 +134,22 @@ require_once __DIR__ . '/actions/delete.php';
                                     <td><?php echo htmlspecialchars($row["email"]); ?></td>
                                     <td><?php echo htmlspecialchars($row["position"]); ?></td>
                                     <td style="text-align: center;">
-                                        <button type="button" onclick="editEmployee(
-                                        <?php echo $row["id"]; ?>,
-                                        '<?php echo addslashes($row["firstname"]); ?>',
-                                        '<?php echo addslashes($row["lastname"]); ?>',
-                                        '<?php echo addslashes($row["email"]); ?>',
-                                        '<?php echo addslashes($row["position"]); ?>'
-                                    )" class="btn btn-warning">Edit</button>
-                                        <a href="actions/delete.php?delete=<?php echo $row["id"]; ?>" onclick="return confirm('Are you sure you want to delete this employee?')">
-                                            <button type="button" class="btn btn-danger">Delete</button>
-                                        </a>
+                                        <div class="btn-group">
+                                            <button type="button" onclick="editEmployee(
+                                                <?php echo $row["id"]; ?>,
+                                                '<?php echo addslashes($row["firstname"]); ?>',
+                                                '<?php echo addslashes($row["lastname"]); ?>',
+                                                '<?php echo addslashes($row["email"]); ?>',
+                                                '<?php echo addslashes($row["position"]); ?>'
+                                            )" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <a href="actions/delete.php?delete=<?php echo $row["id"]; ?>"
+                                               onclick="return confirm('Are you sure you want to delete this employee?')"
+                                               class="btn btn-sm btn-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
@@ -147,92 +176,127 @@ require_once __DIR__ . '/actions/delete.php';
             </div>
         </div>
 
-        <div id="editModal">
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Employee</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="actions/update.php">
+                        <div class="modal-body">
+                            <input type="hidden" name="id" id="edit_id">
+                            <div class="form-group">
+                                <label for="edit_firstname">First Name</label>
+                                <input type="text" class="form-control" name="firstname" id="edit_firstname" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_lastname">Last Name</label>
+                                <input type="text" class="form-control" name="lastname" id="edit_lastname">
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_email">Email</label>
+                                <input type="email" class="form-control" name="email" id="edit_email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="edit_position">Position</label>
+                                <input type="text" class="form-control" name="position" id="edit_position" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" name="update" class="btn btn-primary">Update Employee</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="createModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <span class="close" onclick="closeEditModal()">&times;</span>
-                <h3 class="edit-employee-heading">Edit Employee</h3>
-                <form method="POST" action="actions/update.php">
-                    <input type="hidden" name="id" id="edit_id">
-                    <div class="form-group">
-                        <label for="edit_firstname">First Name</label>
-                        <input type="text" name="firstname" id="edit_firstname" required>
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Employee</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="actions/create.php">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="modal_firstname">First Name</label>
+                            <input type="text" class="form-control" id="modal_firstname" name="firstname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_lastname">Last Name</label>
+                            <input type="text" class="form-control" id="modal_lastname" name="lastname">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_email">Email</label>
+                            <input type="email" class="form-control" id="modal_email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal_position">Position</label>
+                            <input type="text" class="form-control" id="modal_position" name="position" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_lastname">Last Name</label>
-                        <input type="text" name="lastname" id="edit_lastname">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="create" class="btn btn-primary">Add Employee</button>
                     </div>
-                    <div class="form-group">
-                        <label for="edit_email">Email</label>
-                        <input type="email" name="email" id="edit_email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit_position">Position</label>
-                        <input type="text" name="position" id="edit_position" required>
-                    </div>
-                    <button type="submit" name="update" class="btn">Update Employee</button>
                 </form>
             </div>
         </div>
     </div>
 
-    <div id="createModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3 class="add-employee-heading">Add New Employee</h3>
-            <form method="POST" action="actions/create.php">
-                <div class="form-group">
-                    <label for="modal_firstname">First Name</label>
-                    <input type="text" id="modal_firstname" name="firstname" placeholder="First Name" required>
-                </div>
-                <div class="form-group">
-                    <label for="modal_lastname">Last Name</label>
-                    <input type="text" id="modal_lastname" name="lastname" placeholder="Last Name">
-                </div>
-                <div class="form-group">
-                    <label for="modal_email">Email</label>
-                    <input type="email" id="modal_email" name="email" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <label for="modal_position">Position</label>
-                    <input type="text" id="modal_position" name="position" placeholder="Position" required>
-                </div>
-                <button type="submit" name="create" class="btn">Add Employee</button>
-            </form>
-        </div>
-    </div>
-
     <script>
         function editEmployee(id, firstname, lastname, email, position) {
-            document.getElementById('editModal').style.display = 'flex';
-            document.getElementById('edit_id').value = id;
-            document.getElementById('edit_firstname').value = firstname;
-            document.getElementById('edit_lastname').value = lastname;
-            document.getElementById('edit_email').value = email;
-            document.getElementById('edit_position').value = position;
+            $('#edit_id').val(id);
+            $('#edit_firstname').val(firstname);
+            $('#edit_lastname').val(lastname);
+            $('#edit_email').val(email);
+            $('#edit_position').val(position);
+            $('#editModal').modal('show');
         }
 
         function openModal() {
-            document.getElementById('createModal').style.display = 'flex';
+            $('#createModal').modal('show');
         }
 
-        function closeModal() {
-            document.getElementById('createModal').style.display = 'none';
-        }
+        $(document).ready(function() {
+            // Reset form when modal is hidden
+            $('#createModal, #editModal').on('hidden.bs.modal', function() {
+                $(this).find('form').trigger('reset');
+            });
 
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
+            // Initialize tooltips
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 
-        window.onclick = function(event) {
-            var createModal = document.getElementById('createModal');
-            var editModal = document.getElementById('editModal');
-            if (event.target == createModal) {
-                closeModal();
-            }
-            if (event.target == editModal) {
-                closeEditModal();
-            }
-        }
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#employeeTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false, // Using custom search
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 10
+            });
+        });
     </script>
 </body>
 
