@@ -62,7 +62,10 @@ require_once __DIR__ . '/actions/delete.php';
 </head>
 
 <body>
-    <div style="position: absolute; bottom: 10px; left: 10px;">
+    <div style="position: absolute; bottom: 10px; left: 10px; display: flex; gap: 10px;">
+        <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+            <a href="user_management.php" class="btn" style="background-color: #3b4d7a;">Manage Users</a>
+        <?php endif; ?>
         <form method="post">
             <button type="submit" name="logout" class="btn">Logout</button>
         </form>

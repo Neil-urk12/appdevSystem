@@ -303,6 +303,9 @@ if (isset($_POST['login'])) {
         $username = $conn->real_escape_string($_POST['username']);
         $password = $_POST['password'];
         
+        // Debug the input
+        error_log("Login attempt for username: " . $username);
+        
         $sql = "SELECT id, username, password, roles FROM users WHERE username = ?";
         $stmt = $conn->prepare($sql);
         
@@ -317,30 +320,40 @@ if (isset($_POST['login'])) {
         }
         
         $result = $stmt->get_result();
+        error_log("Query result rows: " . $result->num_rows);
         
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
+            error_log("User data found: " . json_encode($user));
+            
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                $_SESSION['roles'] = $user['roles'];
+                $_SESSION['role'] = $user['roles'];
                 
-                // Redirect based on roles
+                error_log("Session data set: " . json_encode($_SESSION));
+                error_log("Role comparison: '" . $user['roles'] . "' === 'admin' is: " . ($user['roles'] === 'admin' ? 'true' : 'false'));
+                
                 if ($user['roles'] === 'admin') {
+                    error_log("Redirecting admin to user_management.php");
                     header("Location: user_management.php");
                 } else {
+                    error_log("Redirecting user to index.php");
                     header("Location: index.php");
                 }
                 exit();
             } else {
+                error_log("Password verification failed");
                 $error_message = "Invalid username or password";
             }
         } else {
+            error_log("No user found with username: " . $username);
             $error_message = "Invalid username or password";
         }
         $stmt->close();
         
     } catch (Exception $e) {
+        error_log("Login error: " . $e->getMessage());
         $error_message = "Login error: " . $e->getMessage();
     }
 }
@@ -351,85 +364,14 @@ if (isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/authpage.css">
     <title>Login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .login-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 24px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input[type="text"],
-        input[type="password"],
-        input[type="email"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: blue;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            margin-bottom: 10px;
-        }
-        button:hover {
-            color: blue;
-            border: 1px solid blue;
-            background-color: white;
-        }
-        .error {
-            color: red;
-            margin-bottom: 15px;
-        }
-        .success {
-            color: green;
-            margin-bottom: 15px;
-        }
-        .recovery-codes {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin: 15px 0;
-            font-family: monospace;
-        }
-        .recovery-codes code {
-            display: block;
-            margin: 5px 0;
-        }
-        .recovery-codes-warning {
-            color: #dc3545;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-    </style>
 </head>
 <body>
+    <div class="circle"></div>
+    <!-- <div class="banner">
+        <h1>Employee Sigmanagement System</h1>
+    </div> -->
     <div class="login-container">
         <h2 id="formTitle">Login</h2>
         
@@ -447,7 +389,7 @@ if (isset($_POST['login'])) {
                     <?php foreach ($_SESSION['recovery_codes'] as $code): ?>
                         <code><?php echo htmlspecialchars($code); ?></code>
                     <?php endforeach; ?>
-                    <button onclick="downloadRecoveryCodes()" style="margin-top: 10px;">Download Recovery Codes</button>
+                    <button class="btn" onclick="downloadRecoveryCodes()" style="margin-top: 10px;">Download Recovery Codes</button>
                 </div>
                 <?php unset($_SESSION['recovery_codes']); ?>
             <?php endif; ?>
@@ -462,10 +404,10 @@ if (isset($_POST['login'])) {
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required>
+                <button class="forgot-password" type="button" onclick="showForm('forgotPasswordForm')">Forgot Password?</button>
             </div>
-            <button type="submit" name="login">Login</button>
-            <button type="button" onclick="showForm('forgotPasswordForm')">Forgot Password?</button>
-            <button type="button" onclick="showForm('registerForm')">Register</button>
+            <button class="btn" type="submit" name="login">Login</button>
+            <button class="register-btn" type="button" onclick="showForm('registerForm')">Don't have an account? | Register</button>
         </form>
 
         <!-- Register Form -->
@@ -498,8 +440,8 @@ if (isset($_POST['login'])) {
                     </div>
                 <?php endforeach; ?>
             </div>
-            <button type="submit" name="register">Register</button>
-            <button type="button" onclick="showForm('loginForm')">Back to Login</button>
+            <button class="btn" type="submit" name="register">Register</button>
+            <button class="btn" type="button" onclick="showForm('loginForm')">Back to Login</button>
         </form>
 
         <!-- Forgot Password Form -->
@@ -512,9 +454,9 @@ if (isset($_POST['login'])) {
                 <label for="recovery_code">Recovery Code</label>
                 <input type="text" id="recovery_code" name="recovery_code" placeholder="Enter your recovery code" required>
             </div>
-            <button type="submit" name="forgot_password">Reset Password</button>
-            <button type="button" onclick="showForm('securityQuestionsForm')">Use Security Questions Instead</button>
-            <button type="button" onclick="showForm('loginForm')">Back to Login</button>
+            <button class="btn" type="submit" name="forgot_password">Reset Password</button>
+            <button class="btn" type="button" onclick="showForm('securityQuestionsForm')">Use Security Questions Instead</button>
+            <button class="btn" type="button" onclick="showForm('loginForm')">Back to Login</button>
         </form>
 
         <!-- Security Questions Form -->
@@ -526,9 +468,9 @@ if (isset($_POST['login'])) {
             <div id="securityQuestionsContainer">
                 <!-- Will be populated by JavaScript -->
             </div>
-            <button type="submit" name="verify_security_questions">Verify Answers</button>
-            <button type="button" onclick="showForm('forgotPasswordForm')">Use Recovery Code Instead</button>
-            <button type="button" onclick="showForm('loginForm')">Back to Login</button>
+            <button class="btn" type="submit" name="verify_security_questions">Verify Answers</button>
+            <button class="btn" type="button" onclick="showForm('forgotPasswordForm')">Use Recovery Code Instead</button>
+            <button class="btn" type="button" onclick="showForm('loginForm')">Back to Login</button>
         </form>
     </div>
 

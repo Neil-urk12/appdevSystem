@@ -1,0 +1,117 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.banner {
+    position: fixed;
+    top: 5%;
+    background: blue;
+    padding: 0.5rem 4rem;
+    color: white;
+    border-radius: 1rem;
+}
+.banner h1 {
+
+}
+.login-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 24px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+.form-group {
+    margin-bottom: 15px;
+    text-align: right;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.btn {
+    background-color: blue;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+.btn:hover {
+    color: blue;
+    border: 1px solid blue;
+    background-color: white;
+}
+.forgot-password, .register-btn {
+    border: 0px;
+    padding: 0;
+    color: blue;
+    margin: 8px 0 0 0;
+    background: none;
+}
+.forgot-password:hover{
+    cursor:pointer;
+    background: blue;
+    color: white;
+    padding: 0px 4px;
+}
+.register-btn {
+    display: block;
+    margin: 0 auto;
+}
+.register-btn {
+    cursor: pointer;
+}
+.error {
+    color: red;
+    margin-bottom: 15px;
+}
+.success {
+    color: green;
+    margin-bottom: 15px;
+}
+.recovery-codes {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+    font-family: monospace;
+}
+.recovery-codes code {
+    display: block;
+    margin: 5px 0;
+}
+.recovery-codes-warning {
+    color: #dc3545;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.circle {
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    background-color: blue;
+    right: -21%;
+    border-radius: 100%;
+}
